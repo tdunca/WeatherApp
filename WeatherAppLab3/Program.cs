@@ -81,31 +81,31 @@ namespace [WeatherAppLab3]
             switch (choice)
             {
                 case 1:
-                    ShowAveregeTemperature("");
+                    ShowAveregeTemperature("Outside");
+                    break;
+                case 2:
+                    ShowSortedTemperatures("Outside");
+                    break;
+                case 3:
+                    ShowSortedHumidity("Outside");
+                    break;
+                case 4:
+                    ShowMeterologicalSeasons();
+                    break;
+                case 5:
+                    ShowRiskOfMold("Outside");
+                    break;
+                case 6:
+                    ShowAveregeTemperature("Inside");
+                    break;
+                case 7:
+                    ShowSortedTemperatures("Inside");
                     break;
                 case 1:
-                    ShowAveregeTemperature("");
+                    ShowSortedHumidity("Inside");
                     break;
                 case 1:
-                    ShowAveregeTemperature("");
-                    break;
-                case 1:
-                    ShowAveregeTemperature("");
-                    break;
-                case 1:
-                    ShowAveregeTemperature("");
-                    break;
-                case 1:
-                    ShowAveregeTemperature("");
-                    break;
-                case 1:
-                    ShowAveregeTemperature("");
-                    break;
-                case 1:
-                    ShowAveregeTemperature("");
-                    break;
-                case 1:
-                    ShowAveregeTemperature("");
+                    ShowRiskOfMold("Inside");
                     break;
                 case 10:
                     Console.WriteLine("Exiting program...");
