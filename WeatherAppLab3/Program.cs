@@ -153,5 +153,20 @@ namespace [WeatherAppLab3]
         using var dbContext = new WeatherDbContext();
         action(dbContext);
     }
+
+    public static void ShowAveregeTemperature(string location)
+    {
+        var dateInput = GetValidatedDate("Enter a date (YYYY-MM-DD): ");
+
+        ExecuteWithDbContext(dbContext =>
+        {
+            var avgTemp = dbContext.WeatherData
+                .Where(w => w.Date.Date == dateInput.Date && w.location == location)
+                .Average(w => w.Temperature);
+
+            Console.WriteLine($"Average temperature for {location} on {dateInput:yyyy-MM-dd} is {avgTemp:F2}°C");
+        });
+
+    }
 }
 }
