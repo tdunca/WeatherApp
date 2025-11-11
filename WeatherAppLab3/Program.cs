@@ -148,5 +148,10 @@ namespace [WeatherAppLab3]
         cvs.Contrxt.RegisterClassMap<WeatherDataMap>();
         return cvs.GetRecords<WeatherRecord>().ToList();
     }
+    private static void ExecuteWithDbContext(Action<WeatherDbContext> action)
+    {
+        using var dbContext = new WeatherDbContext();
+        action(dbContext);
+    }
 }
 }
