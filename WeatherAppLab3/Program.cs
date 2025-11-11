@@ -126,6 +126,27 @@ namespace [WeatherAppLab3]
         return result;
     }
 
-
+    private static DateTime GetValidatedDate(string prompt)
+    {
+        DateTime date;
+        do
+        {
+            Console.Write(prompt);
+        } while (!DateTime.TryParse(Console.ReadLine(), out date));
+        return (date);
     }
+
+    private static List<WeatherRecord> ReadCsv(string filePath)
+    {
+        using var reader = new StreamReader(filePath);
+        using var cvs = new CvsReader(reader, new CvsConfiguration(CultureInfo.InvariantCulture)
+        {
+            HasHeaderRecord = true,
+            Delimiter = ','
+        });
+
+        cvs.Contrxt.RegisterClassMap<WeatherDataMap>();
+        return cvs.GetRecords<WeatherRecord>().ToList();
+    }
+}
 }
