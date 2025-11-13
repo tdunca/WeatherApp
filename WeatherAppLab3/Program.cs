@@ -1,6 +1,7 @@
 ﻿using CvsHelper;
 using CvsHelper.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -168,5 +169,51 @@ namespace [WeatherAppLab3]
         });
 
     }
-}
+
+    public static void ShowSortedTemperatures(string location)
+    {
+        var count = GetValidatedInput("How many days would you like to view?", 1, int.MaxValue);
+
+        ExecuteWithDbContext(dbContext =>
+        {
+            var sortedDays = dbContext.WeatherData
+            .Where(w => w.Location == location)
+            .GroupBy(w => w.Date.Date)
+            .Select(g => new { Date = g.key, AvgTemp = g.Averege(w => w.Temperature) })
+            .OrderByDescending(d => d.AvgTemp)
+            .Take(count);
+
+            foreach (var day in sortedDays)
+            {
+                Console.WriteLine($"{day.Date:yyyy-MM-dd}: {day.AvgTemp:F2}°C");
+            }
+        });
+
+    }
+    public static void ShowSortedHumidity(string location)
+    {
+        var count = GetValidatedInput("How many days would you like to view?", 1, int.MaxValue);
+        ExecuteWithDbContext(dbContext =>
+        {
+            var sortedDays = dbContext.WeatherData
+            .Where(w => w.Location == location)
+            .GroupBy(w => w.Date.Date)
+            .Select(g => new { Date = g.key, AvgHumidity = g.Averege(w => w.Humidity) })
+            .OrderBy(d => d.AvgHumidity)
+            .Take(count);
+           
+            foreach (var day in sortedDays)
+            {
+                Console.WriteLine($"{day.Date:yyyy-MM-dd}: {day.AvgHumidity:F2}%");
+            }
+        });
+    }
+
+    public static void ShowMeterologicalSeasons()
+    {
+        ExecuteWithDbContext(dbContext =>
+        {
+            var autumnStart = dbContext.WeatherData
+        });
+    }
 }
