@@ -1,8 +1,20 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using WeatherAppLab3.Models;
 
-public class Class1
+namespace WeatherAppLab3.DataAccess
 {
-	public Class1()
-	{
-	}
+    public class WeatherDBContext : DbContext
+    {
+        public DbSet<WeatherRecord> WeatherData { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Data Source=.db"); //add db here
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<WeatherRecord>().ToTable("Prod_WeatherData");
+        }
+    }
 }
