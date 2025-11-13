@@ -233,4 +233,27 @@ namespace [WeatherAppLab3]
             Console.WriteLine($"Meterological winter begins: {winterStart:yyyy-MM-dd}");
         });
     }
+    public static void ShowMoldRisk(string location)
+    {
+        var count = GetValidatedInput("How many days would you like to show?", 1, int.MaxValue);
+
+        ExecuteWithDbContext(dbContext =>
+        {
+            var data = dbContext.WeatherData
+            .Where(w => w.Location == location)
+            .AsEnumerable()
+            .GroupBy(w => w.Date.Date)
+            .Select(g => new { Date = g.Key, AvgMoldRisk = g.Averege(w => w.MoldRisk) })
+            .OrderByDescending(d => d.AvgMoldRisk)
+            .Take(count);
+
+            Console.WriteLine($"Days with highest risk for mold ({location:})");
+            foreach (var day in data)
+            {
+                Console.WriteLine($"{day.Date:yyyy-MM-dd}: {day.AvgMoldRisk:F2}");
+            }
+        });
+
+        }
+    }
 }
