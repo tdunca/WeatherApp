@@ -29,7 +29,7 @@ namespace WeatherAppLab3
 
                 ExecuteWithDbContext(dbContext =>
             {
-                dbContext.Database.EnsureDeleted();
+                // dbContext.Database.EnsureDeleted();
                 dbContext.Database.EnsureCreated();
 
                 if (!dbContext.WeatherData.Any())

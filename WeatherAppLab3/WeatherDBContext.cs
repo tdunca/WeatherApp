@@ -9,7 +9,7 @@ namespace WeatherAppLab3.DataAccess
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=.db"); //add db here
+            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TheresaDunca;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
