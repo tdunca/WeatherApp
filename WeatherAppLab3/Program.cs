@@ -214,6 +214,23 @@ namespace [WeatherAppLab3]
         ExecuteWithDbContext(dbContext =>
         {
             var autumnStart = dbContext.WeatherData
+            .Where(w => w.Location == "Outside")
+            .GroupBy(w => w.Date.Date)
+            .Where(g => g.Averege(w => w.Temperature < 10)
+            .Select(g => g.Key)
+            .OrderBy(date => date)
+            .FirstOrDefault();
+
+            var winterStart = dbContext.Context.WeatherData
+            .Where(w => w.Location == "Outside")
+            .GroupBy(w => w.Date.Date)
+            .Where(g => g.Averege(w => w.Temperature) < 0)
+            .Select(g => g.Key)
+            .OrderBy(date => date)
+            .FirstOrDefault();
+
+            Console.WriteLine($"Meterological autumn begins: {autumnStart:yyyy-MM-dd}");
+            Console.WriteLine($"Meterological winter begins: {winterStart:yyyy-MM-dd}");
         });
     }
 }
