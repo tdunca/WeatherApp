@@ -10,10 +10,10 @@ namespace WeatherAppLab3
     {
         public WeatherDataMap()
         {
-            Map(m => m.Date).Name("Date").TypeConverterOption.Format("yyyy-MM-dd H:mm");
-            Map(m => m.Location).Name("Location");
+            Map(m => m.Date).Name("Datum").TypeConverterOption.Format("yyyy-MM-dd H:mm");
+            Map(m => m.Location).Name("Plats");
             Map(m => m.Temperature).Name("Temp").TypeConverter<NullableDoubleConverter>();
-            Map(m => m.Humidity).Name("Humidity").TypeConverter<NullableDoubleConverter>();
+            Map(m => m.Humidity).Name("Luftfuktighet").TypeConverter<NullableDoubleConverter>();
         }
     }
     public class NullableDoubleConverter : DefaultTypeConverter
