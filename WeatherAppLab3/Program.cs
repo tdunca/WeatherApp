@@ -15,42 +15,81 @@ namespace WeatherAppLab3
 {
     public static void Main(string[] args)
     {
-        var filePath = @""; //insert csvfile
+            // Temp lösning pga ej access till CSV för att köra ändå
+            var filePath = "";
+
+            try
+            {
+                List<WeatherRecord> weatherData = new List<WeatherRecord>();
+
+               
+                if (!string.IsNullOrWhiteSpace(filePath) && File.Exists(filePath))
+                {
+                    weatherData = ReadCsv(filePath);
+                }
+                else
+                {
+                    Console.WriteLine("CSV-fil hittades inte – databasen skapas utan data tills vidare.");
+                }
+
+                ExecuteWithDbContext(dbContext =>
+                {
+                    
+                    dbContext.Database.EnsureCreated();
+
+                    if (weatherData.Any() && !dbContext.WeatherData.Any())
+                    {
+                        dbContext.WeatherData.AddRange(weatherData);
+                        dbContext.SaveChanges();
+                        Console.WriteLine("Database has been filled from CSV.");
+                    }
+
+                    Console.WriteLine($"Total amount of rows: {dbContext.WeatherData.Count()}");
+                });
+
+                ShowMenu();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occured: {ex.Message}");
+            }
+        }
+        /*var filePath = @"C:\Users\there\...\TempFuktData.csv"; //insert csvfile when access with full searchpath
 
         try
         {
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException($"File {filePath} was not found. Check path and try again.");
-            }
-
-
-                var weatherData = ReadCsv(filePath);
-
-                ExecuteWithDbContext(dbContext =>
-            {
-                // dbContext.Database.EnsureDeleted();
-                dbContext.Database.EnsureCreated();
-
-                if (!dbContext.WeatherData.Any())
-                {
-                    dbContext.WeatherData.AddRange(weatherData);
-                    dbContext.SaveChanges();
-                    Console.WriteLine("Database has been filled.");
-                }
-                Console.WriteLine($"Total amount of rows: {dbContext.WeatherData.Count()}");
-            });
-
-                ShowMenu();
-
-            }
-                catch (Exception ex)
+        if (!File.Exists(filePath))
         {
-            Console.WriteLine($"An error occured: {ex.Message}");
+            throw new FileNotFoundException($"File {filePath} was not found. Check path and try again.");
         }
-    }
 
-    private static void PauseBeforeReturning()
+
+            var weatherData = ReadCsv(filePath);
+
+            ExecuteWithDbContext(dbContext =>
+        {
+            // dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+
+            if (!dbContext.WeatherData.Any())
+            {
+                dbContext.WeatherData.AddRange(weatherData);
+                dbContext.SaveChanges();
+                Console.WriteLine("Database has been filled.");
+            }
+            Console.WriteLine($"Total amount of rows: {dbContext.WeatherData.Count()}");
+        });
+
+            ShowMenu();
+
+        }
+            catch (Exception ex)
+    {
+        Console.WriteLine($"An error occured: {ex.Message}");
+    }
+}*/
+
+        private static void PauseBeforeReturning()
     {
         Console.WriteLine("Press any key to return to the menu...");
         Console.ReadKey();
