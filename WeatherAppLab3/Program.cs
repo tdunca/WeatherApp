@@ -1,7 +1,5 @@
-﻿using CvsHelper;
-using CvsHelper.Configurations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,20 +9,20 @@ using WeatherAppLab3.DataAccess;
 using WeatherAppLab3.Models;
 
 
-namespace [WeatherAppLab3]
+namespace WeatherAppLab3
 {
     public class Program
 {
     public static void Main(string[] args)
     {
-        var filePath = @"";
+        var filePath = @""; //insert csvfile
 
         try
         {
             if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException($"File {filePath was not found. Check it and try again.");
-                }
+                throw new FileNotFoundException($"File {filePath} was not found. Check path and try again.");
+            }
 
 
                 var weatherData = ReadCsv(filePath);
@@ -94,7 +92,7 @@ namespace [WeatherAppLab3]
                     ShowMeterologicalSeasons();
                     break;
                 case 5:
-                    ShowRiskOfMold("Outside");
+                    ShowMoldRisk("Outside");
                     break;
                 case 6:
                     ShowAveregeTemperature("Inside");
@@ -102,11 +100,11 @@ namespace [WeatherAppLab3]
                 case 7:
                     ShowSortedTemperatures("Inside");
                     break;
-                case 1:
+                case 8:
                     ShowSortedHumidity("Inside");
                     break;
-                case 1:
-                    ShowRiskOfMold("Inside");
+                case 9:
+                    ShowMoldRisk("Inside");
                     break;
                 case 10:
                     Console.WriteLine("Exiting program...");
@@ -140,18 +138,18 @@ namespace [WeatherAppLab3]
     private static List<WeatherRecord> ReadCsv(string filePath)
     {
         using var reader = new StreamReader(filePath);
-        using var cvs = new CvsReader(reader, new CvsConfiguration(CultureInfo.InvariantCulture)
+        using var cvs = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             HasHeaderRecord = true,
-            Delimiter = ','
+            Delimiter = ","
         });
 
-        cvs.Contrxt.RegisterClassMap<WeatherDataMap>();
+        cvs.Context.RegisterClassMap<WeatherDataMap>();
         return cvs.GetRecords<WeatherRecord>().ToList();
     }
-    private static void ExecuteWithDbContext(Action<WeatherDbContext> action)
+    private static void ExecuteWithDbContext(Action<WeatherDBContext> action)
     {
-        using var dbContext = new WeatherDbContext();
+        using var dbContext = new WeatherDBContext();
         action(dbContext);
     }
 
@@ -162,7 +160,7 @@ namespace [WeatherAppLab3]
         ExecuteWithDbContext(dbContext =>
         {
             var avgTemp = dbContext.WeatherData
-                .Where(w => w.Date.Date == dateInput.Date && w.location == location)
+                .Where(w => w.Date.Date == dateInput.Date && w.Location == location)
                 .Average(w => w.Temperature);
 
             Console.WriteLine($"Average temperature for {location} on {dateInput:yyyy-MM-dd} is {avgTemp:F2}°C");
@@ -179,7 +177,7 @@ namespace [WeatherAppLab3]
             var sortedDays = dbContext.WeatherData
             .Where(w => w.Location == location)
             .GroupBy(w => w.Date.Date)
-            .Select(g => new { Date = g.key, AvgTemp = g.Averege(w => w.Temperature) })
+            .Select(g => new { Date = g.Key, AvgTemp = g.Average(w => w.Temperature) })
             .OrderByDescending(d => d.AvgTemp)
             .Take(count);
 
@@ -198,7 +196,7 @@ namespace [WeatherAppLab3]
             var sortedDays = dbContext.WeatherData
             .Where(w => w.Location == location)
             .GroupBy(w => w.Date.Date)
-            .Select(g => new { Date = g.key, AvgHumidity = g.Averege(w => w.Humidity) })
+            .Select(g => new { Date = g.Key, AvgHumidity = g.Average(w => w.Humidity) })
             .OrderBy(d => d.AvgHumidity)
             .Take(count);
            
@@ -216,15 +214,15 @@ namespace [WeatherAppLab3]
             var autumnStart = dbContext.WeatherData
             .Where(w => w.Location == "Outside")
             .GroupBy(w => w.Date.Date)
-            .Where(g => g.Averege(w => w.Temperature < 10)
+            .Where(g => g.Average(w => w.Temperature) < 10)
             .Select(g => g.Key)
             .OrderBy(date => date)
             .FirstOrDefault();
 
-            var winterStart = dbContext.Context.WeatherData
+            var winterStart = dbContext.WeatherData
             .Where(w => w.Location == "Outside")
             .GroupBy(w => w.Date.Date)
-            .Where(g => g.Averege(w => w.Temperature) < 0)
+            .Where(g => g.Average(w => w.Temperature) < 0)
             .Select(g => g.Key)
             .OrderBy(date => date)
             .FirstOrDefault();
@@ -243,11 +241,11 @@ namespace [WeatherAppLab3]
             .Where(w => w.Location == location)
             .AsEnumerable()
             .GroupBy(w => w.Date.Date)
-            .Select(g => new { Date = g.Key, AvgMoldRisk = g.Averege(w => w.MoldRisk) })
+            .Select(g => new { Date = g.Key, AvgMoldRisk = g.Average(w => w.MoldRisk) })
             .OrderByDescending(d => d.AvgMoldRisk)
             .Take(count);
 
-            Console.WriteLine($"Days with highest risk for mold ({location:})");
+            Console.WriteLine($"Days with highest risk for mold ({location}): ");
             foreach (var day in data)
             {
                 Console.WriteLine($"{day.Date:yyyy-MM-dd}: {day.AvgMoldRisk:F2}");
